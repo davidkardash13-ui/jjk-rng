@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>JJK RNG — фан-игра</title>
+    <link rel="icon" href="./logo.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="app" class="app">
+      <header class="topbar">
+        <div class="brand">
+          <img
+            class="brand__logo"
+            src="./logo.svg"
+            width="44"
+            height="44"
+            alt="JJK RNG"
+          />
+          <div class="brand__text">
+            <div class="brand__title">JJK RNG</div>
+            <div class="brand__subtitle" data-i18n="brand_subtitle">крутки • коллекция • улучшения</div>
+          </div>
+        </div>
+
+        <div class="wallet">
+          <label class="langfield">
+            <span class="langfield__label" data-i18n="lang_label">Язык</span>
+            <select id="langSelect" class="select select--lang" aria-label="Language">
+              <option value="ru">Русский</option>
+              <option value="en">English</option>
+              <option value="ja">日本語</option>
+            </select>
+          </label>
+          <div class="pill">
+            <span class="pill__label" data-i18n="pill_cubes">Кубы</span>
+            <span id="currency" class="pill__value">0</span>
+          </div>
+          <div class="pill">
+            <span class="pill__label" data-i18n="pill_luck">Удача</span>
+            <span id="luck" class="pill__value">0%</span>
+          </div>
+          <button id="btnCheatUnlock" type="button" class="btn btn--ghost" data-i18n="btn_cheat_unlock" data-i18n-title="btn_cheat_unlock_title" title="">
+            Код
+          </button>
+          <button id="btnTitles" type="button" class="btn btn--ghost" data-i18n="btn_titles">
+            Титулы
+          </button>
+          <button id="btnGetAll" class="btn btn--ghost is-hidden" type="button" data-i18n="btn_get_all" data-i18n-title="btn_get_all_title" title="">
+            Получить всё
+          </button>
+          <button id="btnSave" class="btn btn--ghost" type="button" data-i18n="btn_save">Сохранить</button>
+          <button id="btnReset" class="btn btn--danger" type="button" data-i18n-title="btn_reset_title" data-i18n="btn_reset">Сброс</button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <aside class="sidebar">
+          <nav class="nav">
+            <button class="nav__item is-active" data-tab="roll" type="button">
+              <span class="nav__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.2" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.2" fill="currentColor"/><path d="M15.5 8.5h0M8.5 15.5h0"/></svg>
+              </span>
+              <span class="nav__text" data-i18n="nav_roll">Крутка</span>
+            </button>
+            <button class="nav__item" data-tab="collection" type="button">
+              <span class="nav__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h10M4 18h8"/><path d="M18 14l2 2-4 4-2-2"/></svg>
+              </span>
+              <span class="nav__text" data-i18n="nav_collection">Коллекция</span>
+            </button>
+            <button class="nav__item" data-tab="upgrades" type="button">
+              <span class="nav__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+              </span>
+              <span class="nav__text" data-i18n="nav_upgrades">Улучшения</span>
+            </button>
+            <button class="nav__item" data-tab="quests" type="button">
+              <span class="nav__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9h6m-6 4h6"/></svg>
+              </span>
+              <span class="nav__text" data-i18n="nav_quests">Задания</span>
+            </button>
+            <button class="nav__item" data-tab="battle" type="button">
+              <span class="nav__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2l3 3-9 9-4 1 1-4 9-9z"/><path d="M12 11l2 2"/></svg>
+              </span>
+              <span class="nav__text" data-i18n="nav_battle">Бой</span>
+            </button>
+            <button class="nav__item" data-tab="updates" type="button">
+              <span class="nav__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h14"/></svg>
+              </span>
+              <span class="nav__text" data-i18n="nav_updates">Обновления</span>
+            </button>
+            <button class="nav__item" data-tab="help" type="button">
+              <span class="nav__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 015 0c0 2-2.5 2-2.5 4M12 16h.01"/></svg>
+              </span>
+              <span class="nav__text" data-i18n="nav_help">Справка</span>
+            </button>
+          </nav>
+
+          <section class="panel panel--small">
+            <div class="panel__title" data-i18n="stat_title">Статистика</div>
+            <div class="kv">
+              <div class="kv__row">
+                <div class="kv__k" data-i18n="stat_rolls">Всего круток</div>
+                <div id="statRolls" class="kv__v">0</div>
+              </div>
+              <div class="kv__row">
+                <div class="kv__k" data-i18n="stat_pity_s">Pity до S</div>
+                <div id="statPityS" class="kv__v">0</div>
+              </div>
+              <div class="kv__row">
+                <div class="kv__k" data-i18n="stat_pity_a">Pity до A</div>
+                <div id="statPityA" class="kv__v">0</div>
+              </div>
+            </div>
+          </section>
+        </aside>
+
+        <section class="content">
+          <section class="panel" data-pane="roll">
+            <div class="panel__header">
+              <div>
+                <div class="panel__title" data-i18n="panel_roll_title">Баннер “Проклятая удача”</div>
+                <div class="panel__subtitle" data-i18n="panel_roll_sub">
+                  Повыше шанс — ближе легенда. Pity гарантирует A/S на дистанции.
+                </div>
+              </div>
+              <div class="chips">
+                <span class="chip chip--ss">SS</span>
+                <span class="chip chip--splus">S+</span>
+                <span class="chip chip--s">S</span>
+                <span class="chip chip--a">A</span>
+                <span class="chip chip--b">B</span>
+                <span class="chip chip--c">C</span>
+                <span class="chip chip--o" data-i18n-title="chip_o_title" title="">O</span>
+              </div>
+            </div>
+
+            <div class="rollbox">
+              <div class="rollbox__left">
+                <div class="meter">
+                  <div class="meter__labelrow">
+                    <div class="meter__label" data-i18n="pity_s">Pity S</div>
+                    <div id="pitySLabel" class="meter__value">0 / 80</div>
+                  </div>
+                  <div class="meter__bar">
+                    <div id="pitySBar" class="meter__fill meter__fill--s" style="width: 0%"></div>
+                  </div>
+                </div>
+                <div class="meter">
+                  <div class="meter__labelrow">
+                    <div class="meter__label" data-i18n="pity_a">Pity A</div>
+                    <div id="pityALabel" class="meter__value">0 / 20</div>
+                  </div>
+                  <div class="meter__bar">
+                    <div id="pityABar" class="meter__fill meter__fill--a" style="width: 0%"></div>
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <button id="btnRoll1" class="btn btn--primary" type="button">
+                    <span data-i18n="roll_x1">Крутка x1</span>
+                    <span class="btn__hint">(<span data-i18n="roll_hint_cost">стоимость:</span> <b id="rollCost1">10</b>)</span>
+                  </button>
+                  <button id="btnRoll10" class="btn btn--glow" type="button">
+                    <span data-i18n="roll_x10">Крутка x10</span>
+                    <span class="btn__hint" data-i18n="roll_discount_hint">(скидка 5%)</span>
+                  </button>
+                </div>
+
+                <div class="farm">
+                  <div class="farm__top">
+                    <div>
+                      <div class="farm__title" data-i18n="farm_title">Миссия</div>
+                      <div id="missionStatus" class="farm__subtitle" data-i18n="farm_sub_default">Заработай кубы без крутки (кулдаун).</div>
+                    </div>
+                    <button id="btnMission" class="btn btn--ghost" type="button" data-i18n="mission_btn_go">Выйти на миссию</button>
+                  </div>
+                  <div class="farm__bar">
+                    <div id="missionBar" class="farm__fill" style="width: 0%"></div>
+                  </div>
+                </div>
+
+                <div class="smallnote" data-i18n="farm_tip">
+                  Совет: дубликаты превращаются в “Осколки”, которые можно тратить на улучшения.
+                </div>
+              </div>
+
+              <div class="rollbox__right">
+                <div class="result">
+                  <div class="result__title" data-i18n="roll_result_title">Результат</div>
+                  <div id="resultCard" class="resultcard">
+                    <div class="resultcard__rarity">—</div>
+                    <div class="resultcard__name">—</div>
+                    <div class="resultcard__desc">—</div>
+                  </div>
+                  <div id="resultLog" class="log" aria-live="polite"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel is-hidden" data-pane="collection">
+            <div class="panel__header">
+              <div>
+                <div class="panel__title" data-i18n="panel_collection_title">Коллекция</div>
+                <div class="panel__subtitle" data-i18n="panel_collection_sub">Фильтруй по редкости, смотри дубликаты и бонусы.</div>
+              </div>
+              <div class="toolbar">
+                <select id="collectionFilter" class="select" data-i18n-aria="filter_aria" aria-label="">
+                  <option value="all" data-i18n="filter_all">Все</option>
+                  <option value="SS">SS</option>
+                  <option value="S+">S+</option>
+                  <option value="S">S</option>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="O" data-i18n="filter_o">Особый (O)</option>
+                </select>
+                <button id="btnSortCollection" class="btn btn--ghost" type="button" data-i18n="sort_btn">Сортировать</button>
+              </div>
+            </div>
+
+            <div class="cardsmeta">
+              <div class="pill">
+                <span class="pill__label" data-i18n="meta_shards">Осколки</span>
+                <span id="shards" class="pill__value">0</span>
+              </div>
+              <div class="pill">
+                <span class="pill__label" data-i18n="meta_unique">Уникальных</span>
+                <span id="uniqueCount" class="pill__value">0</span>
+              </div>
+            </div>
+
+            <div id="collectionGrid" class="grid"></div>
+          </section>
+
+          <section class="panel is-hidden" data-pane="upgrades">
+            <div class="panel__header">
+              <div>
+                <div class="panel__title" data-i18n="panel_upgrades_title">Улучшения</div>
+                <div class="panel__subtitle" data-i18n="panel_upgrades_sub">
+                  Трать осколки, чтобы ускорять прогресс и повышать шансы.
+                </div>
+              </div>
+            </div>
+
+            <div id="upgradeList" class="upgrades"></div>
+          </section>
+
+          <section class="panel is-hidden" data-pane="quests">
+            <div class="panel__header">
+              <div>
+                <div class="panel__title" data-i18n="panel_quests_title">Задания</div>
+                <div class="panel__subtitle" data-i18n="panel_quests_sub">
+                  Ежедневные цели на кубы и особые миссии с уникальными наградами класса O.
+                </div>
+              </div>
+              <div class="toolbar quest-toolbar">
+                <button id="btnRerollQuests" class="btn btn--ghost" type="button" data-i18n="btn_reroll_quests">
+                  Обновить список
+                </button>
+              </div>
+            </div>
+
+            <div class="quest-tabs" role="tablist" data-i18n-aria="quest_tablist_aria" aria-label="">
+              <button
+                type="button"
+                class="quest-tabs__btn is-active"
+                data-quest-tab="daily"
+                role="tab"
+                aria-selected="true"
+                data-i18n="quest_tab_daily"
+              >
+                Ежедневные
+              </button>
+              <button type="button" class="quest-tabs__btn" data-quest-tab="special" role="tab" aria-selected="false" data-i18n="quest_tab_special">
+                Особые миссии
+              </button>
+            </div>
+
+            <div id="questListDaily" class="quests" data-quest-panel="daily"></div>
+            <div id="questListSpecial" class="quests is-hidden" data-quest-panel="special"></div>
+          </section>
+
+          <section class="panel is-hidden" data-pane="battle">
+            <div class="panel__header">
+              <div>
+                <div class="panel__title" data-i18n="panel_battle_title">Бой с боссами</div>
+                <div class="panel__subtitle" data-i18n="panel_battle_sub">
+                  Кликай «Удар», снимай HP. Победа — кубы и осколки. Следующий босс открывается после победы.
+                </div>
+                <div id="battleModeHint" class="panel__hint" style="display: none" aria-live="polite"></div>
+              </div>
+            </div>
+            <div class="battle-tabs" role="tablist" aria-label="">
+              <button
+                type="button"
+                class="battle-tabs__btn is-active"
+                data-battle-tab="local"
+                role="tab"
+                aria-selected="true"
+                data-i18n="battle_tab_local"
+              >
+                Локальные
+              </button>
+              <button
+                type="button"
+                class="battle-tabs__btn"
+                data-battle-tab="global"
+                role="tab"
+                aria-selected="false"
+                disabled
+                data-i18n="battle_tab_global"
+                title=""
+              >
+                Глобальные
+              </button>
+            </div>
+            <div class="battle">
+              <div id="battleBossList" class="battle__list" aria-label=""></div>
+              <div class="battle__arena" id="battleArena">
+                <div id="battleBossTitle" class="battle__title">—</div>
+                <div class="battle__hpblock">
+                  <div class="battle__hprow">
+                    <span id="battleHpText" class="battle__hptext">HP: —</span>
+                    <span id="battleDmgHint" class="battle__dmghint"></span>
+                  </div>
+                  <div class="battle__hpbar">
+                    <div id="battleHpFill" class="battle__hpfill" style="width: 0%"></div>
+                  </div>
+                </div>
+                <button id="btnBattleHit" type="button" class="btn btn--glow battle__hitbtn" data-i18n="battle_hit">Удар!</button>
+                <div id="battleLastHit" class="battle__lasthit"></div>
+                <div id="battleRewards" class="battle__rewards"></div>
+                <div id="battleTameWrap" class="battle__tame"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel is-hidden" data-pane="updates">
+            <div class="panel__header">
+              <div>
+                <div class="panel__title" data-i18n="panel_updates_title">Обновления игры</div>
+                <div class="panel__subtitle" data-i18n="panel_updates_sub">Журнал изменений: новые функции и правки.</div>
+              </div>
+            </div>
+            <div class="updates">
+              <article class="updates__entry updates__entry--new">
+                <div class="updates__date" data-i18n="updates_date_new">Апрель 2026</div>
+                <ul class="updates__list">
+                  <li data-i18n="updates_li_1">Вкладка Обновления — список изменений (эта страница).</li>
+                  <li data-i18n="updates_li_2">Бой — кликер против боссов; у Махораги кнопка Приручить (редкий шанс, карта в коллекции).</li>
+                  <li data-i18n="updates_li_3">Редкости SS, S+ и боссы в режиме боя.</li>
+                  <li data-i18n="updates_li_4">Эволюция и полная эволюция с новыми именами и оформлением.</li>
+                  <li data-i18n="updates_li_5">АФК и пассивный доход кубов; миссии и задания.</li>
+                  <li data-i18n="updates_li_6">Глобальные боссы — вкладка после победы над Махорагой: огромный HP, крупные награды.</li>
+                  <li data-i18n="updates_li_7">Старые сохранения автоматически получают новые поля боя.</li>
+                  <li data-i18n="updates_li_8">Добавлен чит «Получить всё»: секретный ввод открывает кнопку с максимальными ресурсами и коллекцией.</li>
+                  <li data-i18n="updates_li_9">В чит-режиме: бесконечный урон в бою и отображение ресурсов как ∞.</li>
+                  <li data-i18n="updates_li_10">Катсцена при первом успешном приручении Махораги (закрывается кнопкой/кликом/ESC).</li>
+                  <li data-i18n="updates_li_11">Махорагу можно приручать повторно (дубликаты добавляются в коллекцию).</li>
+                  <li data-i18n="updates_li_12">Цена крутки x10 теперь логичная: 100 кубов.</li>
+                  <li data-i18n="updates_li_13">Новый персонаж: «Мудоло Юджи» (S+).</li>
+                </ul>
+              </article>
+              <article class="updates__entry">
+                <div class="updates__date" data-i18n="updates_date_old">Ранее</div>
+                <ul class="updates__list">
+                  <li data-i18n="updates_li_old_1">Баннер с крутками, pity, коллекция, улучшения за осколки.</li>
+                  <li data-i18n="updates_li_old_2">Сохранение прогресса в браузере.</li>
+                </ul>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel is-hidden" data-pane="help">
+            <div class="panel__header">
+              <div>
+                <div class="panel__title" data-i18n="panel_help_title">Справка</div>
+                <div class="panel__subtitle" data-i18n="panel_help_sub">Коротко о механиках.</div>
+              </div>
+            </div>
+
+            <div class="help">
+              <div class="help__block">
+                <div class="help__h" data-i18n="help_h_rarities">Редкости</div>
+                <ul class="help__ul">
+                  <li data-i18n="help_li_s">S — ультраредкое (есть pity‑гарант раз в 80)</li>
+                  <li data-i18n="help_li_a">A — редкое (pity‑гарант раз в 20)</li>
+                  <li data-i18n="help_li_bc">B/C — обычные</li>
+                </ul>
+              </div>
+              <div class="help__block">
+                <div class="help__h" data-i18n="help_h_pity">Pity</div>
+                <div class="help__p" data-i18n="help_p_pity">
+                  Каждая неудача приближает гарант: при достижении порога следующая крутка
+                  выдаёт соответствующую редкость (или выше).
+                </div>
+              </div>
+              <div class="help__block">
+                <div class="help__h" data-i18n="help_h_dups">Дубликаты</div>
+                <div class="help__p" data-i18n="help_p_dups">
+                  Дубликаты конвертируются в <b>Осколки</b>. Осколки трать на улучшения (удача,
+                  доход, скидка на крутку).
+                </div>
+              </div>
+              <div class="help__block">
+                <div class="help__h" data-i18n="help_h_note">Важно</div>
+                <div class="help__p" data-i18n="help_p_note">
+                  Игра по мотивам: никаких спойлерных сцен и сюжетных пересказов — только RNG
+                  механика и коллекционирование.
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <div
+      id="cutsceneMahoraga"
+      class="cutscene cutscene--mahoraga is-hidden"
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cutsceneMahoragaTitle"
+    >
+      <div class="cutscene__backdrop" tabindex="-1"></div>
+      <div class="cutscene__fx" aria-hidden="true"></div>
+      <div class="cutscene__panel">
+        <div class="cutscene__ss" aria-hidden="true">SS</div>
+        <h2 id="cutsceneMahoragaTitle" class="cutscene__title" data-i18n="cutscene_mahoraga_title">
+          Связь установлена
+        </h2>
+        <p class="cutscene__lead" data-i18n="cutscene_mahoraga_lead">
+          Восьмикрылый генерал откликнулся на зов.
+        </p>
+        <p class="cutscene__name" data-i18n="cutscene_mahoraga_name">Махорага</p>
+        <p class="cutscene__flavor" data-i18n="cutscene_mahoraga_flavor">
+          Редчайшая карта добавлена в коллекцию.
+        </p>
+        <button
+          type="button"
+          id="btnCutsceneMahoraga"
+          class="btn btn--glow cutscene__cta"
+          data-i18n="cutscene_mahoraga_btn"
+        >
+          Продолжить
+        </button>
+      </div>
+    </div>
+
+    <div
+      id="cutsceneFinal"
+      class="cutscene cutscene--final is-hidden"
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cutsceneFinalTitle"
+    >
+      <div class="cutscene__backdrop" tabindex="-1"></div>
+      <div class="cutscene__fx cutscene__fx--final" aria-hidden="true"></div>
+      <div class="cutscene__panel">
+        <div class="cutscene__ss" aria-hidden="true">WORLD</div>
+        <h2 id="cutsceneFinalTitle" class="cutscene__title" data-i18n="cutscene_final_title">
+          Конец света отменён
+        </h2>
+        <p class="cutscene__lead" data-i18n="cutscene_final_lead">
+          Последний удар прошёл сквозь небо. Мир снова дышит.
+        </p>
+        <p class="cutscene__name" data-i18n="cutscene_final_name">Истинный Хелан Сукуна</p>
+        <p class="cutscene__flavor" data-i18n="cutscene_final_flavor">
+          Ты победил мирового босса. Это финал… пока.
+        </p>
+        <button type="button" id="btnCutsceneFinal" class="btn btn--glow cutscene__cta" data-i18n="cutscene_final_btn">
+          Завершить
+        </button>
+      </div>
+    </div>
+
+    <div id="titlesModal" class="modal is-hidden" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="titlesModalTitle">
+      <div class="modal__backdrop" tabindex="-1"></div>
+      <div class="modal__panel">
+        <div class="modal__top">
+          <div>
+            <div id="titlesModalTitle" class="modal__title" data-i18n="titles_title">Титулы</div>
+            <div class="modal__sub" data-i18n="titles_sub">Собирай достижения и открывай редкие цвета.</div>
+          </div>
+          <button id="btnCloseTitles" type="button" class="btn btn--ghost" data-i18n="titles_close">Закрыть</button>
+        </div>
+        <div id="titlesList" class="titles"></div>
+      </div>
+    </div>
+
+    <script src="./src/i18n.js"></script>
+    <script src="./src/app.bundle.js"></script>
+  </body>
+</html>

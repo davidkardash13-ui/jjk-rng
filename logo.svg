@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="g1" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7c5cff"/>
+      <stop offset="0.5" stop-color="#39d5ff"/>
+      <stop offset="1" stop-color="#ffcc66"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="20" y1="12" x2="44" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.2" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- outer ring / curse circle -->
+  <circle cx="32" cy="32" r="28" stroke="url(#g1)" stroke-width="2.5" fill="rgba(15,23,48,0.85)"/>
+  <circle cx="32" cy="32" r="22" stroke="rgba(124,92,255,0.35)" stroke-width="1" fill="none"/>
+  <!-- inner dice / RNG cube hint -->
+  <path filter="url(#glow)" fill="url(#g1)" d="M32 14l14 8v20l-14 8-14-8V22l14-8z" opacity="0.95"/>
+  <path fill="url(#g2)" d="M32 14l14 8v20l-14 8-14-8V22l14-8z"/>
+  <!-- pips like dice face -->
+  <circle cx="32" cy="28" r="2.2" fill="#0b1020" opacity="0.85"/>
+  <circle cx="26" cy="34" r="2.2" fill="#0b1020" opacity="0.85"/>
+  <circle cx="38" cy="34" r="2.2" fill="#0b1020" opacity="0.85"/>
+  <circle cx="32" cy="40" r="2.2" fill="#0b1020" opacity="0.85"/>
+</svg>
