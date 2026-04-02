@@ -382,6 +382,14 @@
     { id: "income", title: "Доход", desc: "Даёт кубы за каждую крутку (пассивный фарм).", max: 25, baseCost: 14, costGrowth: 1.18 },
     { id: "discount", title: "Скидка", desc: "Уменьшает стоимость крутки x1 и x10.", max: 12, baseCost: 22, costGrowth: 1.25 },
     { id: "questing", title: "Контракты", desc: "Увеличивает награды за задания и шанс получить доп. кубы.", max: 15, baseCost: 16, costGrowth: 1.2 },
+    {
+      id: "bossdmg",
+      title: "Урон по боссам",
+      desc: "Увеличивает урон за клик в режиме боя (локальные и глобальные боссы).",
+      max: 25,
+      baseCost: 26,
+      costGrowth: 1.21,
+    },
   ];
 
   const QUEST_TEMPLATES = [
@@ -650,7 +658,7 @@
     collection: {},
     evo: {},
     fullEvo: {},
-    upgrades: { luck: 0, income: 0, discount: 0, questing: 0 },
+    upgrades: { luck: 0, income: 0, discount: 0, questing: 0, bossdmg: 0 },
     quests: [],
     questDay: "",
     specialMissions: {},
@@ -1787,15 +1795,12 @@
       const b = BOSS_LIST[state.battle.activeIndex];
       return b ? b.maxHp : CHEAT_MAX;
     }
+    const bossLvl = state.upgrades.bossdmg || 0;
+    const bossMult = 1 + Math.min(2.0, bossLvl * 0.06); // up to +150% at lvl 25
     let d = 12 + (state.upgrades.luck || 0) * 4;
     d += Math.min(40, Object.keys(state.evo || {}).length * 2);
     if (Math.random() < 0.12) d = Math.round(d * 2);
-    const mult =
-      state.battle?.dialog?.dmgClicksLeft > 0 && Number.isFinite(state.battle.dialog.dmgMult)
-        ? state.battle.dialog.dmgMult
-        : 1;
-    if (state.battle?.dialog?.dmgClicksLeft > 0) state.battle.dialog.dmgClicksLeft -= 1;
-    return Math.max(1, Math.round(d * mult));
+    return Math.max(1, Math.round(d * bossMult));
   }
 
   function getGlobalBossHp(idx) {
@@ -1819,12 +1824,14 @@
     if (state.flags?.infiniteBattleDamage) return boss.maxHp;
     const luck = state.upgrades.luck || 0;
     const evoN = Object.keys(state.evo || {}).length;
+    const bossLvl = state.upgrades.bossdmg || 0;
+    const bossMult = 1 + Math.min(1.25, bossLvl * 0.04); // up to +100% at lvl 25
     const pct = 0.0009 + Math.min(0.0011, luck * 0.000045) + Math.min(0.0004, evoN * 0.00002);
     let d = Math.floor(boss.maxHp * pct);
     d += Math.min(80000, evoN * 500);
     d = Math.max(2500, d);
     if (Math.random() < 0.11) d = Math.round(d * 1.55);
-    return Math.max(1, Math.round(d));
+    return Math.max(1, Math.round(d * bossMult));
   }
 
   function selectBattleBoss(idx) {
@@ -2193,7 +2200,10 @@
     els.battleHpText.textContent = `HP: ${Math.ceil(hp)} / ${boss.maxHp}`;
     const pct = Math.min(100, Math.max(0, (hp / boss.maxHp) * 100));
     if (els.battleHpFill) els.battleHpFill.style.width = `${pct}%`;
-    const sample = 12 + (state.upgrades.luck || 0) * 4 + Math.min(40, Object.keys(state.evo || {}).length * 2);
+    const baseSample = 12 + (state.upgrades.luck || 0) * 4 + Math.min(40, Object.keys(state.evo || {}).length * 2);
+    const bossLvl = state.upgrades.bossdmg || 0;
+    const bossMult = 1 + Math.min(2.0, bossLvl * 0.06);
+    const sample = Math.round(baseSample * bossMult);
     if (els.battleDmgHint) {
       els.battleDmgHint.textContent = state.flags?.infiniteBattleDamage
         ? t("battle_dmg_infinite")
